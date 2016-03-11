@@ -26,7 +26,6 @@ abstract class Field[B] (val endianness: Endianness) extends DataStructure {
     currentPosition = posCopy
     setBits(Data.getData(posCopy, posCopy + length))
     length
-
   }
 
 }

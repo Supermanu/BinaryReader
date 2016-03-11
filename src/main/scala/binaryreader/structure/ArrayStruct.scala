@@ -24,7 +24,6 @@ object ArrayStruct {
   }
 
   def apply(name: String, struct: Structure, fctS: (Structure) => Int) = {
-    println("building it")
     new ArrayStructConst(name, struct, sizeFunc = fctS)
   }
 
