@@ -8,12 +8,14 @@ import org.json4s._
 import org.json4s.jackson.JsonMethods._
 import org.json4s.JsonDSL._
 
+import scala.collection.mutable.ArrayBuffer
+
 trait Structure {
   lazy val position: Int = currentPosition
   val name: String
   var currentPosition = -1
   val length: Int
-  val children: Vector[Structure]
+  val children: ArrayBuffer[Structure]
 
   var parent: Option[Structure] = None
 
@@ -40,6 +42,7 @@ trait Structure {
       case s: If => s.getParent
       case s: ArrayStruct => s.getParent
       case s: Pointer => s.getParent
+      //case s: RecursiveStruct => s.getParent
       case s => s
     }
   }
@@ -63,6 +66,7 @@ trait Structure {
   def propagate(pos: Int): Int = {
     currentPosition = pos
     var currPos = pos
+    //children.foreach(c => println(c.name))
     children.foreach { child =>
       child.parent = Some(this)
       currPos += child.propagate(currPos)
@@ -72,9 +76,11 @@ trait Structure {
   }
 
   def getJsonField: JObject = {
+
     val c = children.filter{s =>
       s match {
         case i:If => i.condResult
+        //case r:RecursiveStruct => r.condResult1
         case v:IntValue => false
         case _ => true
       }

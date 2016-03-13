@@ -18,6 +18,8 @@ package binaryreader.structure
 import org.json4s._
 import org.json4s.JsonDSL._
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
  * Created by manuel on 9/06/15.
  */
@@ -26,7 +28,7 @@ object Struct {
 }
 
 class Struct(val name: String, struct: Seq[Structure]) extends Structure {
-  val children = struct.toVector
+  val children = struct.to[ArrayBuffer]
   children.foreach(s => s.parent = Some(this))
   lazy val length = children.map(_.length).sum
 

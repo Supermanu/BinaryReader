@@ -15,9 +15,11 @@ You should have received a copy of the GNU General Public License
 
 package binaryreader.structure
 
+import scala.collection.mutable.ArrayBuffer
+
 
 abstract class ContainerStructure(struct: Seq[Structure]) extends Structure {
   val length = 0
-  val children = struct.toVector
+  val children = struct.to[ArrayBuffer]
   children.foreach(c => c.parent = Some(this))
 }

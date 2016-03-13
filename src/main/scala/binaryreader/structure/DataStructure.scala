@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 
 package binaryreader.structure
 
+import scala.collection.mutable.ArrayBuffer
+
 abstract class DataStructure extends Structure {
-  lazy val children = Vector.empty[Structure]
+  lazy val children = ArrayBuffer.empty[Structure]
 }

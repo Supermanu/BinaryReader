@@ -39,5 +39,4 @@ class If(val name: String = "If", cond: (Structure) => Boolean, struct: Structur
     println("\t" * level + "If (" + name + "): " + condResult)
     if (condResult) children.foreach(s => s.debugString(level + 1))
   }
-
 }

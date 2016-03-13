@@ -18,6 +18,8 @@ package binaryreader.structure
 import org.json4s._
 import org.json4s.JsonDSL._
 
+import scala.collection.mutable.ArrayBuffer
+
 
 object IntValue {
   def apply(name: String, value: Int) = new IntValue(name, value)
@@ -35,7 +37,7 @@ class IntValue(val name: String, valueIn: Int = -1, f: (Structure) => Int = s =>
     else valueIn
   }
 
-  val children = Vector.empty[Structure]
+  val children = ArrayBuffer.empty[Structure]
   val length = 0
 
   def copy(name: String) : IntValue = {

@@ -72,9 +72,8 @@ class StructureSuite extends FunSuite {
   test ("Test recursive call") {
     val fs = new FileStructure("", "/home/manuel/dev/xoreos/sometilemodel/tcn01_a01_01.mdl",
       ArrayStruct("", new UInt("", LittleEndian, 4), 2),
-      new Pointer("", s => s.children.length + 2, new UInt("", LittleEndian, 4))
+      new Pointer("",s => s.children.length + 2, new UInt("", LittleEndian, 4))
     )
-
     fs.readBinaryFile()
     fs.debugString(0)
     fs.getJsonField
