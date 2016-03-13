@@ -58,10 +58,12 @@ trait Bits {
   }
 
   def toSInt: Int = {
-    val bools = bytes.map(byteToBooleans)
-//    bools.foreach(println)
+    val bools = {
+      if (endianness == BigEndian) bytes.map(byteToBooleans)
+      else bytes.map(byteToBooleans).reverse
+    }
+
     val sign = bools.head.head
-//    println(sign)
 
     def reverseSign(in: Boolean): Boolean = {
       if (sign) !in else in
@@ -72,8 +74,6 @@ trait Bits {
     }.sum
 
     val signedPart = booleansToInt(bools.head.map(reverseSign).slice(0,8), (bools.length - 1) * 8 )
-//    println(signedPart)
-//    println(unsignedPart)
 
     (if (sign) -1 else 1) * (unsignedPart + signedPart + (if (sign) 1 else 0))
   }
