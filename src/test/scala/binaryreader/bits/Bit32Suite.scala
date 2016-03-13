@@ -27,15 +27,18 @@ class Bit32Suite extends FunSuite {
     val b = ByteBuffer.allocate(4)
     val b1 = ByteBuffer.allocate(4)
     val b2 = ByteBuffer.allocate(4)
+    val b3 = ByteBuffer.allocate(4)
 
     val bits1 = new Bit32(b.putInt(26).array())
     val bits2 = new Bit32(b1.putInt(-226).array())
     val bits3 = new Bit32(b2.putInt(50226).array())
+    val bits4 = new Bit32(b3.putInt(385875968).array(), LittleEndian)
 
     assert(bits1.toSInt == 26)
     assert(bits1.toUInt == 26)
     assert(bits2.toSInt == -226)
     assert(bits3.toUInt == 50226)
+    assert(bits4.toSInt == 23)
   }
 
   test ("convert 4 bytes to float with LE") {
