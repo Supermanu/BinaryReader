@@ -17,6 +17,9 @@ package binaryreader.model
 
 import binaryreader.structure._
 
+import scala.collection.mutable.ArrayBuffer
+import scala.tools.nsc.transform.Mixin
+
 class NwnModel(path: String) {
   private val arrayDef = Struct("arrayDef",
     ULInt32("offset"),
@@ -33,6 +36,28 @@ class NwnModel(path: String) {
 
   private val vertex =  Struct("faces",
     Array3("position", LFloat32("xyz"))
+  )
+
+  private val AABBStatic : Struct= Struct("AABBStatic",
+    //IntValue("offModelData", s => s.getParent.getParent.getValue("offModelData")),
+    //IntValue("offRawData", s => s.getParent.getValue("offRawData")),
+    Array3("min", LFloat32("xyz")),
+    Array3("max", LFloat32("xyz")),
+    ULInt32("leftOffset"),
+    ULInt32("rightOffset"),
+    SLInt32("leaf_face"),
+    ULInt32("plane")
+  )
+
+  private val AABBData = Struct( "AABBData",
+    IntValue("offModelData", s => s.getParent.getValue("offModelData")),
+    IntValue("offRawData", s => s.getParent.getValue("offRawData")),
+    ULInt32("AABBOffset"),
+    Pointer("toAABB", s => s.getValue("offModelData") + s.getFieldInt("AABBOffset"),
+      RecursiveStruct("AABBrec",
+        s => s.getFieldInt("leftOffset") > 0, s => s.getFieldInt("leftOffset") + 12,
+        s => s.getFieldInt("rightOffset") > 0, s => s.getFieldInt("rightOffset") + 12,
+        AABBStatic))
   )
 
   private val mesh = Struct("mesh",
@@ -77,20 +102,12 @@ class NwnModel(path: String) {
     Pointer("toFaces", s => s.get("facesOffset").getFieldInt("offset") + s.getValue("offModelData"),
       ArrayStruct("faces", face, (s: Structure) => s.get("facesOffset").getFieldInt("usedCount"))),
     Pointer("toVertices", s => s.getFieldInt("vertexOffset") + s.getValue("offRawData"),
-      ArrayStruct("vertices", vertex, (s: Structure) => s.getFieldInt("vertexCount")))
+      ArrayStruct("vertices", vertex, (s: Structure) => s.getFieldInt("vertexCount"))),
     // Texture ,
-
+    If("CheckAABB", s => s.getParent.getFieldInt("flags").&(512) == 512, AABBData)
   )
 
-  private val AABBNode = Struct( "AABBNode",
-    IntValue("offModelData", s => s.getParent.getValue("offModelData")),
-    IntValue("offRawData", s => s.getParent.getValue("offRawData")),
-        mesh,
-        ULInt32("AABBOffset")//,
-    //    Pointer(lambda ctx: ctx.offModelData + ctx.AABBOffset, AABB)
-  )
-
-  private def getChildNodes(s: Structure): Vector[Structure] = {
+  private def getChildNodes(s: Structure): ArrayBuffer[Structure] = {
     val offModelData = s.getValue("offModelData")
     s.get("toChildren").get("children").children.zipWithIndex.map{c =>
       val offset = c._1.asInstanceOf[UInt].getValue + offModelData
@@ -120,7 +137,7 @@ class NwnModel(path: String) {
       ArrayStruct("children", ULInt32("child"), (s: Structure) => s.get("controllerDataOffset").getFieldInt("usedCount"))),
     ULInt32("flags"),
     If("CheckIfMesh", s => s.getFieldInt("flags").&(32) == 32, mesh),
-    //    If("CheckIfAABBNode", s => s.getFieldInt("flags") == 2, ),
+    //If("CheckIfAABBNode", s => s.getFieldInt("flags") == 2, ),
     IntValue("numberOfChildren", s => s.get("childrenArrayDef").getFieldInt("usedCount")),
     If("CheckChildrenNode", s => s.getValue("numberOfChildren") > 0,
       ArrayStruct("children", (s: Structure) => getChildNodes(s), (s: Structure) => s.getValue("numberOfChildren")))
