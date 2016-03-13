@@ -53,7 +53,7 @@ object ULInt32 {
 }
 
 object UBInt32 {
-  def apply(name: String): UInt = new UInt(name, BigEndian, 1)
+  def apply(name: String): UInt = new UInt(name, BigEndian, 4)
 }
 
 class UInt(val name: String, endianness: Endianness, val length: Int)  extends Field[Int](endianness) {

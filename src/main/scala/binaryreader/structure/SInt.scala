@@ -54,7 +54,7 @@ object SLInt32 {
 }
 
 object SBInt32 {
-  def apply(name: String): SInt = new SInt(name, BigEndian, 1)
+  def apply(name: String): SInt = new SInt(name, BigEndian, 4)
 }
 
 class SInt(val name: String, endianness: Endianness, val length: Int)  extends Field[Int](endianness) {
