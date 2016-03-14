@@ -20,6 +20,8 @@ package binaryreader.structure
  */
 import binaryreader.bits._
 import binaryreader.bits.Endianness._
+import org.json4s._
+import org.json4s.JsonDSL._
 
 /**
  * Created by manuel on 9/06/15.
@@ -75,6 +77,10 @@ class SInt(val name: String, endianness: Endianness, val length: Int)  extends F
 
   override def debugString(level: Int): Unit = {
     println("\t"* level + name + " SInt: " + getValue + " Position: " + position)
+  }
+
+  override def getJsonField: JObject = {
+    JField("name", name) ~ JField("position", position) ~ JField("length", length) ~ JField("value", getValue)
   }
 
 }
