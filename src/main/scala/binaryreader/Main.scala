@@ -16,12 +16,16 @@ You should have received a copy of the GNU General Public License
 
 package binaryreader
 
-import binaryreader.model.NwnModel
+import binaryreader.binary._
 import org.json4s.jackson.JsonMethods._
 
 object Main extends App {
-  def modelToJson(path: String) = {
-    val model = new NwnModel(path)
+  def modelToJson(path: String, game: String="kotor") = {
+    val model: Binary = game match {
+      case "nwn" => new NwnModel(path)
+      case "kotor" => new KotorWok(path)
+    }
+
     model.fs.readBinaryFile()
     println(compact(model.fs.getJsonField))
   }
@@ -38,25 +42,24 @@ object Main extends App {
 
   override def main (args: Array[String]) {
     var argPos = 0
+    var argMap: Map[String, String] = Map.empty
     while (argPos < args.length) {
-      args(argPos) match {
-        case "--json" | "-j" => {
-          if (argPos == args.length - 1) println("model path missing")
-          else {
-            argPos += 1
-            modelToJson(args(argPos))
-          }
+      if (args(argPos).startsWith("--") || args(argPos).startsWith("-")) {
+        if (argPos == args.length - 1) {
+          println("Value missing for " + args(argPos))
+        } else {
+          argMap = argMap + (args(argPos) -> args(argPos + 1))
         }
-        case "--convert" | "-c" => {
-          if (argPos == args.length - 1) println("no bytes to convert")
-          else {
-            argPos += 1
-            modelToJson(args(argPos))
-          }
-        }
-        case _ => println("Unknown parameter")
       }
       argPos += 1
+    }
+
+    // Default game: nwn
+    val game: String = argMap.getOrElse("-g", argMap.getOrElse("--game", "nwn"))
+
+    // Convert to json
+    if (argMap.contains("-j") || argMap.contains("--json")) {
+      modelToJson(argMap.getOrElse[String]("-j", argMap.get("--json").get), game)
     }
   }
 }

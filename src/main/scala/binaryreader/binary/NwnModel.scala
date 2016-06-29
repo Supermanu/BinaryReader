@@ -13,21 +13,21 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 You should have received a copy of the GNU General Public License
   along with BinaryReader.  If not, see <http://www.gnu.org/licenses/>.*/
 
-package binaryreader.model
+package binaryreader.binary
 
 import binaryreader.structure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.tools.nsc.transform.Mixin
 
-class NwnModel(path: String) {
+class NwnModel(val path: String) extends Binary {
   private val arrayDef = Struct("arrayDef",
     ULInt32("offset"),
     ULInt32("usedCount"),
     ULInt32("allocatedcount") )
 
   private val face = Struct("faces",
-    Array3("position", LFloat32("xyz")),
+    Array3("normal", LFloat32("xyz")),
     Padding("Plane distance", 4),
     ULInt32("walkability"),
     Padding(size = 6),
@@ -39,8 +39,6 @@ class NwnModel(path: String) {
   )
 
   private val AABBStatic : Struct= Struct("AABBStatic",
-    //IntValue("offModelData", s => s.getParent.getParent.getValue("offModelData")),
-    //IntValue("offRawData", s => s.getParent.getValue("offRawData")),
     Array3("min", LFloat32("xyz")),
     Array3("max", LFloat32("xyz")),
     ULInt32("leftOffset"),

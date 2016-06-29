@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 
 package binaryreader
 
-import binaryreader.binary.NwnModel
+import binaryreader.binary.KotorWok
 import binaryreader.structure._
 
 import org.scalatest.FunSuite
@@ -24,11 +24,11 @@ import org.json4s.jackson.JsonMethods._
 import org.json4s.JsonDSL._
 
 
-class NwnModelSuite extends FunSuite {
+class KotorModelSuite extends FunSuite {
   test("Processing...") {
     println("processing")
-    val path = "/home/manuel/Developpement/Scala/BinaryReader/data/tcn01_a01_01.mdl"
-    val model = new NwnModel(path)
+    val path = "/home/manuel/Developpement/Scala/BinaryReader/data/m02ad_01a.wok"
+    val model = new KotorWok(path)
     model.fs.readBinaryFile()
     println(pretty(model.fs.getJsonField))
 

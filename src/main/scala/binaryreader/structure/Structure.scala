@@ -42,7 +42,7 @@ trait Structure {
       case s: If => s.getParent
       case s: ArrayStruct => s.getParent
       case s: Pointer => s.getParent
-      //case s: RecursiveStruct => s.getParent
+      case s: RecursiveStruct => s.getParent
       case s => s
     }
   }
@@ -57,7 +57,10 @@ trait Structure {
 
   def getValue(fieldName: String): Int = {
     val f = children.filter(s => s.name == fieldName)
-    if (f.isEmpty) throw new NoSuchElementException("Unable to find " + fieldName)
+    if (f.isEmpty) {
+      children.foreach(c => println(c.name))
+      throw new NoSuchElementException("Unable to find " + fieldName + " in " + name)
+    }
 
     f.head.asInstanceOf[IntValue].value
   }
